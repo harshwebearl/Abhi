@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Abhishek Rubber Products</title>
+
+    <link rel="shortcut icon" href="/img/logo/favicon.ico" type="image/x-icon">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f3f4f6; }
+
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid #e5e5e5;
+            padding: 20px 0;
+        }
+
+        .sidebar .nav-link {
+            font-size: 16px;
+            color: #333;
+            padding: 12px 25px;
+            margin: 4px 0;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: #ef7f1a;
+            color: #fff;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .btn-orange {
+            background: #ef7f1a;
+            color: #fff;
+        }
+
+        .product-img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .card-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+    </style>
+</head>
+
+<body>
+
+   <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="index.html" class="navbar-brand " style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
+                    <img src="/img/logo/Abhishek Rubber Product.png" height="50" alt="">
+                </a>
+
+        <nav class="nav flex-column">
+            <a class="nav-link " href="/admin/admin-dashboard.html">Dashboard</a>
+            <a class="nav-link " href="/admin/manage-admin.html">Manage Admins</a>
+            <a class="nav-link active" href="/admin/manage-products.html">Manage Products</a>
+            <a class="nav-link" href="/admin/manage-gallery.html">Manage Gallery</a>
+            <a class="nav-link text-danger" id="logout" href="login.html">Logout</a>
+        </nav>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>Manage Products</h3>
+            <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#addProductModal">Add New Product</button>
+        </div>
+
+        <div class="card-box">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="70">Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th width="150">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="product-list-body">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- EDIT PRODUCT MODAL -->
+<div class="modal fade" id="editProductModal">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Product</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form>
+                <div class="modal-body">
+
+                    <label class="form-label fw-bold">Current Image</label>
+                    <img id="editImagePreview" class="w-100 rounded mb-3" style="height: 200px; object-fit: cover;">
+
+                    <label class="form-label fw-bold">Change Image</label>
+                    <input id="edit-product-image" name="productImage" type="file" class="form-control mb-3">
+
+                    <label class="form-label fw-bold">Product Name</label>
+                    <input type="text" id="editName" class="form-control mb-3" placeholder="Enter product name">
+
+                    <label class="form-label fw-bold">Category</label>
+                    <select id="edit-product-category" name="categoryId" class="form-control mb-3">
+                        <option value="">Select category</option>
+                    </select>
+
+                    <label class="form-label fw-bold">Description</label>
+                    <textarea id="editDescription" class="form-control" rows="3"></textarea>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-orange">Update Product</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+    <!-- add product MODAL -->
+    <div class="modal fade" id="addProductModal">
+        <div class="modal-dialog">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Product</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form id="add-product-form">
+                    <div class="modal-body">
+                        <div id="add-product-message" class="mb-3" aria-live="polite"></div>
+
+                        <label>Product Image</label>
+                        <input id="add-product-image" name="productImage" type="file" class="form-control mb-3">
+
+                        <label>Product Name</label>
+                        <input id="add-product-name" name="productName" type="text" class="form-control mb-3">
+
+                        <label>Category</label>
+                        <select id="add-product-category" name="categoryId" class="form-control mb-3">
+                            <option value="">Select category</option>
+                        </select>
+
+                        <label>Description</label>
+                        <textarea id="add-product-description" name="description" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button id="add-product-submit" type="submit" class="btn btn-orange">Save Product</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Centered popup modal used instead of JS alert -->
+    <div class="modal fade" id="popupModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="popupModalTitle">Notice</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="popupModalBody"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+        import { BASEURL } from '../BASEURL.js';
+
+        (async function(){
+            function escapeHtml(s){ return String(s||'').replace(/[&<>"'']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'' : '&#39;'}[c])); }
+
+            // Centered popup helper (replaces alert)
+            function showPopup(msg, type='info', title=null){
+                const modalEl = document.getElementById('popupModal');
+                if (!modalEl) { window.alert(msg); return; }
+                const titleEl = document.getElementById('popupModalTitle');
+                const bodyEl = document.getElementById('popupModalBody');
+                if (titleEl) titleEl.textContent = title || (type === 'danger' ? 'Error' : (type === 'success' ? 'Success' : 'Notice'));
+                if (bodyEl) bodyEl.textContent = msg;
+                const header = modalEl.querySelector('.modal-header');
+                header.classList.remove('bg-danger','bg-success','bg-info','text-white');
+                if (type === 'danger') header.classList.add('bg-danger','text-white');
+                else if (type === 'success') header.classList.add('bg-success','text-white');
+                else if (type === 'info') header.classList.add('bg-info','text-white');
+                const bsModal = new bootstrap.Modal(modalEl);
+                bsModal.show();
+            }
+
+            try{
+                const token = localStorage.getItem('adminToken');
+                if (!token) { window.location.href = 'login.html'; return; }
+
+                const tbody = document.getElementById('product-list-body');
+                const categorySelectAdd = document.getElementById('add-product-category');
+                const categorySelectEdit = document.getElementById('edit-product-category');
+
+                async function loadCategories() {
+                    try {
+                        if (!categorySelectAdd && !categorySelectEdit) return;
+                        const cRes = await fetch(`${BASEURL}/category/all`, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
+                        let cJson = {};
+                        try { cJson = await cRes.json(); } catch(e) { cJson = {}; }
+                        const cats = (cRes.ok && cJson && Array.isArray(cJson.data)) ? cJson.data : (Array.isArray(cJson) ? cJson : []);
+
+                        if (categorySelectAdd) {
+                            categorySelectAdd.innerHTML = '<option value="">Select category</option>';
+                            cats.forEach(c => { const opt = document.createElement('option'); opt.value = c._id || c.id || ''; opt.text = c.category_name || c.name || c.categoryName || ''; categorySelectAdd.appendChild(opt); });
+                        }
+
+                        if (categorySelectEdit) {
+                            categorySelectEdit.innerHTML = '<option value="">Select category</option>';
+                            cats.forEach(c => { const opt = document.createElement('option'); opt.value = c._id || c.id || ''; opt.text = c.category_name || c.name || c.categoryName || ''; categorySelectEdit.appendChild(opt); });
+                        }
+
+                    } catch(e) { console.error('Failed to load categories', e); }
+                }
+
+                await loadCategories();
+
+                if (!tbody) return;
+                tbody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>'; 
+
+                const res = await fetch(`${BASEURL}/product/all`, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
+                let json = {};
+                try { json = await res.json(); } catch(e) { json = {}; }
+
+                tbody.innerHTML = '';
+
+                if (res.ok && json && Array.isArray(json.data) && json.data.length) {
+                    json.data.forEach(prod => {
+                        const tr = document.createElement('tr');
+                        const imgSrc = prod.productImage || prod.image || prod.thumbnail || (prod.images && prod.images[0]) || '/img/products/Rubber/Gaskets.webp';
+                        const name = prod.name || prod.productName || prod.title || '';
+                        const desc = prod.description || prod.shortDescription || '';
+                        const category = (prod.categoryId && (prod.categoryId.category_name || prod.categoryId.categoryName)) || (prod.category || prod.cat || prod.type || '');
+                        const id = prod._id || prod.id || ''; 
+                        tr.innerHTML = `
+                            <td>${imgSrc ? `<img src="${escapeHtml(imgSrc)}" class="product-img">` : ''}</td>
+                            <td>${escapeHtml(name)}</td>
+                            <td>${escapeHtml(category)}</td>
+                            <td>${escapeHtml(desc)}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" data-id="${escapeHtml(id)}" data-bs-toggle="modal" data-bs-target="#editProductModal">Edit</button>
+                                <button class="btn btn-danger btn-sm" data-id="${escapeHtml(id)}">Delete</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5">No products found</td></tr>'; 
+                }
+
+                tbody.addEventListener('click', async (e) => {
+                    const btn = e.target.closest('button[data-id]');
+                    if (!btn) return;
+                    const id = btn.getAttribute('data-id');
+                    if (!id) return;
+                    if (btn.classList.contains('btn-danger')) {
+                        if (!confirm('Delete this product?')) return;
+                        try {
+                            const dRes = await fetch(`${BASEURL}/product/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+                            if (dRes.ok) { btn.closest('tr').remove(); }
+                            else { showPopup('Failed to delete product', 'danger'); }
+                        } catch(err) { showPopup('Network error', 'danger'); }
+                    } else if (btn.classList.contains('btn-warning')) {
+                        // Prefill edit modal from API
+                        try {
+                            const r = await fetch(`${BASEURL}/product/${id}`, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
+                            const data = r.ok ? await r.json() : null;
+                            if (data && (data.data || data)) {
+                                const prod = data.data || data;
+                                const editName = document.getElementById('editName');
+                                const editDesc = document.getElementById('editDescription');
+                                const editCat = document.getElementById('edit-product-category');
+                                const editImg = document.getElementById('editImagePreview');
+                                if (editName) editName.value = prod.name || prod.productName || '';
+                                if (editDesc) editDesc.value = prod.description || prod.shortDescription || '';
+                                if (editCat) {
+                                    const catId = prod.categoryId && (prod.categoryId._id || prod.categoryId.id || prod.categoryId);
+                                    const catName = (prod.categoryId && (prod.categoryId.category_name || prod.categoryId.categoryName)) || prod.category || prod.cat || prod.type || '';
+                                    if (catId) {
+                                        const found = Array.from(editCat.options).some(o => o.value === String(catId));
+                                        if (!found) { const newOpt = document.createElement('option'); newOpt.value = String(catId); newOpt.text = catName || String(catId); newOpt.selected = true; editCat.appendChild(newOpt); }
+                                        else { editCat.value = String(catId); }
+                                    } else if (catName) {
+                                        const found = Array.from(editCat.options).some(o => o.value === catName);
+                                        if (!found) { const newOpt = document.createElement('option'); newOpt.value = catName; newOpt.text = catName; newOpt.selected = true; editCat.appendChild(newOpt); }
+                                        else { editCat.value = catName; }
+                                    } else { editCat.value = ''; }
+                                }
+                                if (editImg && (prod.productImage || prod.image || (prod.images && prod.images[0]))) editImg.src = prod.productImage || prod.image || (prod.images && prod.images[0]);
+                                // store id on modal so update can be implemented later
+                                document.getElementById('editProductModal').setAttribute('data-edit-id', id);
+                            }
+                        } catch (err) { console.error(err); }
+                    }
+                });
+
+                // Handle add product form submission
+                const addProductForm = document.getElementById('add-product-form');
+                const addProductMsg = document.getElementById('add-product-message');
+                if (addProductForm) {
+                    addProductForm.addEventListener('submit', async (ev) => {
+                        ev.preventDefault();
+                        const submitBtn = document.getElementById('add-product-submit');
+                        const fileInput = document.getElementById('add-product-image');
+                        const nameInput = document.getElementById('add-product-name');
+                        const descInput = document.getElementById('add-product-description');
+                        if (!nameInput || !descInput || !fileInput) return;
+
+                        const name = nameInput.value.trim();
+                        const description = descInput.value.trim();
+                        const file = fileInput.files && fileInput.files[0];
+
+                        if (!name || !description || !file) {
+                            if (addProductMsg) { addProductMsg.textContent = 'Please fill all fields and select an image.'; addProductMsg.className = 'text-danger small'; }
+                            return;
+                        }
+                        const addCatSelectValid = document.getElementById('add-product-category');
+                        const addCatIdCheck = (addCatSelectValid && addCatSelectValid.value) || '';
+                        if (!addCatIdCheck) { if (addProductMsg) { addProductMsg.textContent = 'Please select a category.'; addProductMsg.className = 'text-danger small'; } return; }
+
+                        submitBtn.disabled = true; const origText = submitBtn.textContent; submitBtn.textContent = 'Saving...';
+                        if (addProductMsg) { addProductMsg.textContent = ''; addProductMsg.className = ''; }
+                        try {
+                            const formData = new FormData();
+                            formData.append('productImage', file);
+                            formData.append('productName', name);
+                            const addCatSelect = document.getElementById('add-product-category');
+                            const addCatId = (addCatSelect && addCatSelect.value) || '';
+                            const addCatName = (addCatSelect && addCatSelect.options[addCatSelect.selectedIndex] && addCatSelect.options[addCatSelect.selectedIndex].text) || '';
+                            formData.append('categoryId', addCatId);
+
+                            formData.append('description', description);
+
+                            const createRes = await fetch(`${BASEURL}/product/create`, {
+                                method: 'POST',
+                                headers: { 'Authorization': 'Bearer ' + token },
+                                body: formData
+                            });
+
+                            let createJson = {};
+                            try { createJson = await createRes.json(); } catch (err) { createJson = {}; }
+
+                            if (createRes.ok && createJson && (createJson.success || createJson.data)) {
+                                const prod = createJson.data || createJson;
+                                const tr = document.createElement('tr');
+                                const imgSrc = prod.productImage || prod.image || (prod.images && prod.images[0]) || '/img/products/Rubber/Gaskets.webp';
+                                const nameVal = prod.name || prod.productName || '';
+                                const descVal = prod.description || prod.shortDescription || '';
+                                const categoryVal = (prod.categoryId && (prod.categoryId.category_name || prod.categoryId.categoryName)) || addCatName || prod.category || prod.cat || prod.type || '';
+                                const id = prod._id || prod.id || '';
+                                tr.innerHTML = `\n                                    <td>${imgSrc ? `<img src="${escapeHtml(imgSrc)}" class="product-img">` : ''}</td>\n                                    <td>${escapeHtml(nameVal)}</td>\n                                    <td>${escapeHtml(categoryVal)}</td>\n                                    <td>${escapeHtml(descVal)}</td>\n                                    <td>\n                                        <button class="btn btn-warning btn-sm" data-id="${escapeHtml(id)}" data-bs-toggle="modal" data-bs-target="#editProductModal">Edit</button>\n                                        <button class="btn btn-danger btn-sm" data-id="${escapeHtml(id)}">Delete</button>\n                                    </td>\n                                `;
+                                tbody.insertBefore(tr, tbody.firstChild);
+                                if (addProductMsg) { addProductMsg.textContent = 'Product created.'; addProductMsg.className = 'text-success small'; }
+                                addProductForm.reset();
+                                try { const modalInst = bootstrap.Modal.getInstance(document.getElementById('addProductModal')); if (modalInst) modalInst.hide(); } catch (_) {}
+                                setTimeout(() => { window.location.reload(); }, 350);
+                            } else {
+                                const err = (createJson && (createJson.message || createJson.error)) || 'Failed to create product.';
+                                if (addProductMsg) { addProductMsg.textContent = err; addProductMsg.className = 'text-danger small'; }
+                            }
+                        } catch (err) {
+                            if (addProductMsg) { addProductMsg.textContent = 'Network error.'; addProductMsg.className = 'text-danger small'; }
+                        } finally {
+                            submitBtn.disabled = false; submitBtn.textContent = origText;
+                        }
+                    });
+                }
+
+                const logoutLink = document.getElementById('logout');
+                if (logoutLink) logoutLink.addEventListener('click', (ev) => { ev.preventDefault(); try{ localStorage.removeItem('adminToken'); } catch(_){} window.location.href = 'login.html'; });
+
+                // Handle edit product update
+                const editForm = document.querySelector('#editProductModal form');
+                if (editForm) {
+                    editForm.addEventListener('submit', async (ev) => {
+                        ev.preventDefault();
+                        const modal = document.getElementById('editProductModal');
+                        const prodId = modal && modal.getAttribute('data-edit-id');
+                        if (!prodId) return;
+
+                        const submitBtn = editForm.querySelector('.btn-orange');
+                        const editImgInput = document.getElementById('edit-product-image');
+                        const editName = document.getElementById('editName');
+                        const editDesc = document.getElementById('editDescription');
+                        const editCat = document.getElementById('edit-product-category');
+
+                        if (!editName || !editDesc || !editCat) return;
+
+                        const fd = new FormData();
+                        const newFile = (editImgInput && editImgInput.files && editImgInput.files[0]) || null;
+                        if (newFile) fd.append('productImage', newFile);
+
+                        fd.append('productName', (editName.value || '').trim());
+                        fd.append('categoryId', (editCat.value || '').trim());
+                        fd.append('description', (editDesc.value || '').trim());
+
+                        try {
+                            if (submitBtn) { submitBtn.disabled = true; const orig = submitBtn.textContent; submitBtn.textContent = 'Updating...'; }
+                            const updateRes = await fetch(`${BASEURL}/product/${prodId}`, {
+                                method: 'PUT',
+                                headers: { 'Authorization': 'Bearer ' + token },
+                                body: fd
+                            });
+                            let updateJson = {};
+                            try { updateJson = await updateRes.json(); } catch(e) { updateJson = {}; }
+                            if (updateRes.ok && (updateJson.success || updateJson.data)) {
+                                try { const modalInst = bootstrap.Modal.getInstance(modal); if (modalInst) modalInst.hide(); } catch(_){}
+                                setTimeout(() => { window.location.reload(); }, 250);
+                            } else {
+                                showPopup((updateJson && (updateJson.message || updateJson.error)) || 'Failed to update product', 'danger');
+                            }
+                        } catch(err) { console.error(err); showPopup('Network error', 'danger'); }
+                        finally { if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Update Product'; } }
+                    });
+                }
+
+            } catch(err){ console.error(err); }
+        })();
+    </script>
+
+</body>
+</html>

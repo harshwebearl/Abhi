@@ -1,0 +1,1 @@
+export const BASEURL = "https://abhisekh.kevalontechnology.in/abhisekh";

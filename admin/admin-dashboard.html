@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Abhishek Rubber Products</title>
+
+     <link rel="shortcut icon" href="/img/logo/favicon.ico" type="image/x-icon">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f3f4f6;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid #e5e5e5;
+            padding: 20px 0;
+        }
+
+        .sidebar .nav-link {
+            font-size: 16px;
+            color: #333;
+            padding: 12px 25px;
+            margin: 4px 0;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: #ef7f1a;
+            color: #fff;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .card-box {
+            border-radius: 12px;
+            padding: 25px;
+            background: #fff;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .top-bar {
+            background: #ffffff;
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .top-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: 700;
+            color: #ef7f1a;
+        }
+
+        .stat-title {
+            font-size: 16px;
+            margin-top: 8px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+       <a href="index.html" class="navbar-brand " style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
+                    <img src="/img/logo/Abhishek Rubber Product.png" height="50" alt="">
+                </a>
+
+        <nav class="nav flex-column">
+            <a class="nav-link active " href="/admin/admin-dashboard.html">Dashboard</a>
+            <a class="nav-link " href="/admin/manage-admin.html">Manage Admins</a>
+            <a class="nav-link" href="/admin/manage-products.html">Manage Products</a>
+            <a class="nav-link" href="/admin/manage-gallery.html">Manage Gallery</a>
+            <a class="nav-link text-danger" id="logout" href="login.html">Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+
+        <!-- Top Bar -->
+        <div class="top-bar d-flex justify-content-between align-items-center">
+            <h3 class="top-title">Dashboard Overview</h3>
+            <span>Admin Panel</span>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-products-count">25</div>
+                    <div class="stat-title">Total Products</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">120</div>
+                    <div class="stat-title">Gallery Images</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-admin-count">01</div>
+                    <div class="stat-title">Total Admin</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section -->
+        <div class="card-box">
+            <h4 class="mb-3">Quick Actions</h4>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <a href="/admin/manage-products.html" class="btn btn-primary w-100 py-3">View Product</a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="/admin/manage-gallery.html" class="btn btn-warning w-100 py-3">View Images</a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="/admin/manage-admin.html" class="btn btn-dark w-100 py-3">View Admin</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { BASEURL } from '../BASEURL.js';
+
+        (async function() {
+            // Redirect to login if no admin token
+            try {
+                const token = localStorage.getItem('adminToken');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Fetch product count and update UI
+                try {
+                    const totalEl = document.getElementById('total-products-count');
+                    const res = await fetch(`${BASEURL}/product/all`, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
+                    let json = {};
+                    try { json = await res.json(); } catch (e) { json = {}; }
+                    const total = (json && typeof json.count === 'number') ? json.count : (Array.isArray(json.data) ? json.data.length : 0);
+                    if (totalEl) totalEl.textContent = String(total);
+                } catch (err) { console.error('Failed to load product count', err); }
+
+                // Fetch admin count and update UI
+                try {
+                    const adminEl = document.getElementById('total-admin-count');
+                    const resAdmin = await fetch(`${BASEURL}/all`, { headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token } });
+                    let adminJson = {};
+                    try { adminJson = await resAdmin.json(); } catch (e) { adminJson = {}; }
+                    const adminTotal = (adminJson && typeof adminJson.count === 'number') ? adminJson.count : (Array.isArray(adminJson.data) ? adminJson.data.length : 0);
+                    if (adminEl) adminEl.textContent = String(adminTotal);
+                } catch (err) { console.error('Failed to load admin count', err); }
+
+            } catch (e) {
+                window.location.href = 'login.html';
+            }
+
+            // Logout link clears token
+            const logoutLink = document.getElementById('logout');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    try { localStorage.removeItem('adminToken'); } catch (err) {}
+                    window.location.href = 'login.html';
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
