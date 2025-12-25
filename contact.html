@@ -34,7 +34,54 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-</head>
+
+    <!-- EmailJS Library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <!-- Custom Modal Styles -->
+    <style>
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .modal-content h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        .modal-content p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .close-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .close-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 
 <body>
 
@@ -129,14 +176,14 @@
                         <p class="mb-4">Connect with us today for product inquiries, custom rubber solutions, or
                             business collaborations. Our dedicated team is always ready to provide expert guidance,
                             reliable support, and prompt responses to your needs.</p>
-                        <form>
-                            <input type="text" class="w-100 form-control p-3 mb-4 border-primary bg-light"
+                        <form id="contactForm">
+                            <input type="text" name="name" class="w-100 form-control p-3 mb-4 border-primary bg-light"
                                 placeholder="Your Name">
-                            <input type="text" class="w-100 form-control p-3 mb-4 border-primary bg-light"
+                            <input type="tel" name="mobile" class="w-100 form-control p-3 mb-4 border-primary bg-light"
                                 placeholder="Your Phone">
-                            <input type="email" class="w-100 form-control p-3 mb-4 border-primary bg-light"
+                            <input type="email" name="email" class="w-100 form-control p-3 mb-4 border-primary bg-light"
                                 placeholder="Enter Your Email">
-                            <textarea class="w-100 form-control mb-4 p-3 border-primary bg-light" rows="4" cols="10"
+                            <textarea name="message" class="w-100 form-control mb-4 p-3 border-primary bg-light" rows="4" cols="10"
                                 placeholder="Your Message"></textarea>
                             <button
                                 class="w-100 btn btn-primary form-control p-3 border-primary bg-primary rounded-pill"
@@ -302,6 +349,24 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
+    <!-- Custom Success Modal -->
+    <div id="successModal" class="custom-modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-check-circle text-success"></i> Success!</h3>
+            <p>Email sent successfully! We'll get back to you soon.</p>
+            <button class="close-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Custom Error Modal -->
+    <div id="errorModal" class="custom-modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-exclamation-triangle text-danger"></i> Error!</h3>
+            <p id="errorMessage">Failed to send email. Please try again.</p>
+            <button class="close-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
 
     <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -315,6 +380,61 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+    <!-- EmailJS Initialization and Form Handling -->
+    <script>
+        (function() {
+            emailjs.init("fe8EebuFS0O0desLt");
+        })();
+
+        // Function to show modal
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        // Function to close modal
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const successModal = document.getElementById('successModal');
+            const errorModal = document.getElementById('errorModal');
+            if (event.target == successModal) {
+                successModal.style.display = 'none';
+            }
+            if (event.target == errorModal) {
+                errorModal.style.display = 'none';
+            }
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const templateParams = {
+                from_name: formData.get('name'),
+                from_email: formData.get('email'),
+                mobile: formData.get('mobile'),
+                message: formData.get('message')
+            };
+
+            console.log('Sending email with params:', templateParams);
+
+            emailjs.send("service_apae5vs", "template_17k31sw", templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    showModal('successModal');
+                    document.getElementById('contactForm').reset(); // Clear form after success
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    document.getElementById('errorMessage').textContent = 'Failed to send email. Error: ' + error.text;
+                    showModal('errorModal');
+                });
+        });
+    </script>
 </body>
 
 </html>
